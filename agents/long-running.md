@@ -1,36 +1,57 @@
 ---
-tags: [agents, infra, observability]
-links: [./orchestration.md, ../observability/tracing.md, ../identity/agent-identity.md]
+tags: [agents, infra, cloud]
+links: [./context-engineering.md, ../observability/tracing.md, ../identity/agent-identity.md]
 status: growing
 updated: 2026-03-22
 ---
 
 # Long-Running Agents
 
-Agents that persist across sessions, maintain state over time, and execute multi-step tasks autonomously — often without a human in the loop for hours or days.
+Agents that work across multiple context windows over hours or days — not single-session assistants.
 
-## Why It's Hard
+## The Core Problem
 
-- **State management** — where does memory live between steps?
-- **Failure recovery** — what happens when a step fails mid-task?
-- **Observability** — how do you debug something that ran for 6 hours?
-- **Authorization drift** — credentials expire, permissions change mid-run
+> "The core challenge of long-running agents is that they must work in discrete sessions,
+> and each new session begins with no memory of what came before. Imagine a software
+> project staffed by engineers working in shifts, where each new engineer arrives with
+> no memory of what happened on the previous shift."
+> — Anthropic Engineering Blog
 
-## Key Concepts
+LLMs have finite context windows. Complex tasks exceed one window. The question is: how do you bridge sessions?
 
-- **Checkpointing** — saving intermediate state so tasks can resume
-- **Event loops** — the agent's internal tick cycle
-- **Interrupt handling** — human-in-the-loop escalation when the agent is stuck
-- **Idempotency** — safe to retry steps without side effects
+## Anthropic's Solution (Claude Agent SDK)
 
-## Open Questions
+Two-agent approach:
+1. **Initializer agent** — sets up environment on first run, creates structured artifacts
+2. **Coding agent** — makes incremental progress each session, leaves clear handoff notes
 
-- Who is responsible when a long-running agent causes harm?
-- How do you audit what a long-running agent did?
-- What's the right granularity for human oversight?
+Key failure modes they observed when *not* doing this:
+- Agent tries to do too much at once
+- No clear state handoff between sessions
+- Compaction (summarizing old turns) alone isn't sufficient
 
-## Related
+Source: "Effective harnesses for long-running agents" (Anthropic, Nov 2025)
+https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
 
-- → [Orchestration](./orchestration.md)
-- → [Observability / Tracing](../observability/tracing.md)
-- → [Agent Identity](../identity/agent-identity.md)
+## Infrastructure Problem: Existing Cloud Wasn't Built for This
+
+Standard cloud infra assumptions break for long-running agents:
+
+| Platform | Limit | Problem |
+|---|---|---|
+| Temporal (durable execution) | 51,200 event history, 2MB payload | Agent making 1000s of LLM calls hits ceiling fast |
+| AWS Step Functions | 256 KiB per state transition | Blocks structured LLM responses |
+| Modal / E2B | 24h max invocation | Lose process state on interrupt |
+
+**OpenComputer** (Mar 2026) — purpose-built cloud for agentic workloads:
+- Persistent VMs that hibernate when idle, wake in seconds
+- Designed for stateful, long-horizon agent processes
+- Addresses the gap that serverless/containerized platforms can't fill
+Source: agent-wars.com, March 16 2026
+
+## Open Problems
+
+- How does an agent know it's making progress vs. going in circles?
+- What's the right granularity of checkpointing?
+- Who is responsible when a long-running agent causes harm mid-task?
+- How do you audit hours of autonomous action?
