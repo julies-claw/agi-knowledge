@@ -1,7 +1,7 @@
 # 🗺️ Knowledge Map
 
 > The top-level view. Every node and how they connect.
-> Last updated: 2026-03-22 | Total nodes: 40+
+> Last updated: 2026-03-25 | Total nodes: 41+
 
 ```
 AGI Era
@@ -26,7 +26,8 @@ AGI Era
 │   ├── Workflow → Agentic (timeline)→ agents/workflow-to-agentic.md
 │   ├── Orchestration                → agents/orchestration.md
 │   ├── Multi-agent systems          → agents/multi-agent.md
-│   ├── Self-improving agents        → agents/self-improving.md
+│   ├── Self-improving agents        → agents/self-improving.md  ★ RSI is here now
+│   ├── Hyperagents (NEW)            → agents/hyperagents.md  ★ Meta FAIR, March 2026
 │   └── Open cloud agents            → agents/open-cloud.md
 │
 ├── 🔐 IDENTITY & SECURITY
@@ -82,6 +83,7 @@ AGI Era
 4. `identity/prompt-injection.md` — the #1 active security threat to agents
 5. `infra/inference-economics.md` — why 1,000× cost drop changes everything
 6. `commerce/a2a.md` — agent-to-agent commerce, still early but building fast
+7. `agents/hyperagents.md` — NEW: recursive metacognitive self-improvement (Meta FAIR, March 2026)
 
 ## Key Cross-Connections
 
@@ -94,3 +96,5 @@ AGI Era
 - **x402** ↔ **Agent wallets** ↔ **A2A** — the payment rails for the agent economy
 - **Humanoid robots** ↔ **Long-running agents** — the physical instantiation of autonomous agents
 - **AI biology** ↔ **Diffusion models** — AlphaFold 3 is a diffusion model; design replaces prediction
+- **Hyperagents** ↔ **Alignment** — metacognitive self-modification means alignment constraints are themselves editable; the safety stakes of RSI just went up
+- **Self-improving agents** ↔ **Inference economics** — RSI needs cheap compute to run improvement loops continuously; 1000× cost drop is what makes "lights out" factories viable
